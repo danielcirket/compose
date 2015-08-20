@@ -117,9 +117,15 @@ namespace Compose.Tests
 
 			Assert.Equal(1, executed);
 		}
+
+		[Unit]
+		public static void WhenAddingProviderDuringExecutionThenThrowsException()
+		{
+			Assert.True(false);
+		}
 	}
 
-	public class ExecutableTResult
+	public class ExecutableTResultTests
 	{
 		[Unit]
 		public void GivenOnExecuteNotInvokedWhenExecuteIsInvokedThenThrowsException()
@@ -229,9 +235,15 @@ namespace Compose.Tests
 
 			Assert.Equal(1, executed);
 		}
+
+		[Unit]
+		public static void WhenAddingProviderDuringExecutionThenThrowsException()
+		{
+			Assert.True(false);
+		}
 	}
 
-	public class ExecutableTContext
+	public class ExecutableTContextTests
 	{
 		[Unit]
 		public void GivenOnExecuteNotInvokedWhenExecuteIsInvokedThenThrowsException()
@@ -340,6 +352,12 @@ namespace Compose.Tests
 			await app.ExecuteAsync(false, cts.Token);
 
 			Assert.Equal(1, executed);
+		}
+
+		[Unit]
+		public static void WhenAddingProviderDuringExecutionThenThrowsException()
+		{
+			Assert.True(false);
 		}
 	}
 }

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Compose
 {
-	internal sealed class ConcurrentTransitionManagerContainer : ITransitionManagerContainer
+	internal sealed class ConcurrentTransitionManagerContainer : TransitionManagerContainer
 	{
 		private readonly ConcurrentDictionary<Type, ConcurrentBag<object>> Managers
 			= new ConcurrentDictionary<Type, ConcurrentBag<object>>();
@@ -16,7 +16,7 @@ namespace Compose
 			private static TypeInfo Disposable = typeof(IDisposable).GetTypeInfo();
 			public static void Restore(object untypedManager)
 			{
-				var manager = untypedManager as IDynamicRegister<T>;
+				var manager = untypedManager as DynamicRegister<T>;
 				if (Disposable.IsAssignableFrom(manager.CurrentService.GetType().GetTypeInfo()))
 					((IDisposable)manager.CurrentService).Dispose();
 				manager.CurrentService = manager.SnapshotService;
@@ -24,14 +24,14 @@ namespace Compose
 
 			public static void Snapshot(object untypedManager)
 			{
-				var manager = untypedManager as IDynamicRegister<T>;
+				var manager = untypedManager as DynamicRegister<T>;
 				if (Disposable.IsAssignableFrom(manager.SnapshotService.GetType().GetTypeInfo()))
 					((IDisposable)manager.SnapshotService).Dispose();
 				manager.SnapshotService = manager.CurrentService;
 			}
 		}
 
-		public void Add<T>(IDynamicRegister<T> register)
+		public void Add<T>(DynamicRegister<T> register)
 		{
 			var managers = Managers.GetOrAdd(typeof(T), new ConcurrentBag<object>());
 			managers.Add(register);

@@ -24,8 +24,8 @@ namespace Compose
 			var transitionalServices = app.Services
 				.GetTransitionalServices();
 			if (!transitionalServices.Any()) return;
-			app.Services.TryAdd(ServiceDescriptor.Singleton(typeof(IDynamicManagerContainer<,>), typeof(SyncLockDynamicManagerContainer<,>)));
-			app.Services.TryAdd(ServiceDescriptor.Singleton<ITransitionManagerContainer, ConcurrentTransitionManagerContainer>());
+			app.Services.TryAdd(ServiceDescriptor.Singleton(typeof(DynamicManagerContainer<,>), typeof(SyncLockDynamicManagerContainer<,>)));
+			app.Services.TryAdd(ServiceDescriptor.Singleton<TransitionManagerContainer, ConcurrentTransitionManagerContainer>());
             foreach (var transitionalService in transitionalServices)
 				app.Services.ApplyTransition(app, transitionalService);
 		}
@@ -40,13 +40,13 @@ namespace Compose
 				services.ApplyFactoryTransition(app, original);
 		}
 
-		private static Type TransitionManager = typeof(ITransitionManager<>);
-		private static Type DynamicRegister = typeof(IDynamicRegister<>);
-		private static Type DynamicContainer = typeof(IDynamicManagerContainer<,>);
-		private static Type FactoryInterface = typeof(IAbstractFactory<>);
+		private static Type TransitionManager = typeof(TransitionManager<>);
+		private static Type DynamicRegister = typeof(DynamicRegister<>);
+		private static Type DynamicContainer = typeof(DynamicManagerContainer<,>);
+		private static Type FactoryInterface = typeof(AbstractFactory<>);
 		private static Type FactoryImplementation = typeof(LambdaAbstractFactory<>);
-		private static Type DynamicManagerInterface = typeof(IDynamicManager<,>);
-		private static Type DynamicManagerImplementation = typeof(DynamicManager<,>);
+		private static Type DynamicManagerInterface = typeof(DynamicManager<,>);
+		private static Type DynamicManagerImplementation = typeof(WeakReferencingDynamicManager<,>);
 
 
 		private static void ApplyTypeTransition(this IServiceCollection services, Application app, ServiceDescriptor original)
@@ -81,7 +81,7 @@ namespace Compose
 			Func<IServiceProvider, object> dynamicManagerFactory =
 				provider => DynamicManagerFactory.ForFactory(dynamicManagerInterface.GetTypeInfo(),
                     provider.GetRequiredService(DynamicContainer.MakeGenericType(original.ServiceType, original.ServiceType)),
-					provider.GetRequiredService<ITransitionManagerContainer>(),
+					provider.GetRequiredService<TransitionManagerContainer>(),
 					provider.GetRequiredService(implementationFactoryInterfaceType)
 				);
 			services.Add(new ServiceDescriptor(dynamicManagerInterface, dynamicManagerFactory, original.Lifetime));

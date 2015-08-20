@@ -38,14 +38,21 @@ namespace Compose
 
 		#region Transitions
 
-		public static void Transition<TService, TImplementation>(this Application app) where TImplementation : class, TService where TService : class
+		public static Provider<TService> AddProvider<TService>(this Application app, Action<IServiceCollection> configureServices)
 		{
-			var transitional = app.ApplicationServices.GetRequiredService<ITransitionManager<TService>>();
-			if (transitional == null) throw new InvalidOperationException($"{typeof(TService).Name} must be registered as a Transitional Service (services.AddTransitional<{typeof(TService).Name}, TImplementation>()");
-			transitional.Change(() => app.ApplicationServices.GetRequiredService<TImplementation>());
-        }
+			// intentionally not performing actions here; defer execution so that providers can be added prior to service declarations
+			return new ServiceCollectionProvider<TService>(() => app.ApplicationServices, () => app.Services, configureServices);
+		}
 
-        internal static Type CreateProxy(this Application app, TypeInfo serviceTypeInfo)
+		public static void Transition<TService>(this Application app, Provider<TService> provider)
+		{
+			var transitional = app.ApplicationServices.GetRequiredService<TransitionManager<TService>>();
+			// TODO : Consider auto-transitional markers for non-transitional services detected for provider
+			if (transitional == null) throw new InvalidOperationException($"{typeof(TService).Name} must be registered as a Transitional Service (services.AddTransitional<{typeof(TService).Name}, TImplementation>()");
+			transitional.Change(() => provider.GetService());
+		}
+
+		internal static Type CreateProxy(this Application app, TypeInfo serviceTypeInfo)
         {
             var emitter = app.ApplicationServices.GetService<DynamicEmitter>();
             if (emitter == null) emitter = app.GetRegisteredDynamicEmitter();
@@ -72,12 +79,12 @@ namespace Compose
 
 		public static void Snapshot(this Application app)
 		{
-			app.ApplicationServices?.GetService<ITransitionManagerContainer>()?.Snapshot();
+			app.ApplicationServices?.GetService<TransitionManagerContainer>()?.Snapshot();
 		}
 
 		public static void Restore(this Application app)
 		{
-			app.ApplicationServices?.GetService<ITransitionManagerContainer>()?.Restore();
+			app.ApplicationServices?.GetService<TransitionManagerContainer>()?.Restore();
 		}
 
 		#endregion

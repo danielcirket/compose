@@ -2,7 +2,7 @@
 
 namespace Compose
 {
-    internal sealed class LambdaAbstractFactory<T> : IAbstractFactory<T>
+    internal sealed class LambdaAbstractFactory<T> : AbstractFactory<T>
     {
 		private readonly Func<object> _lambda;
 

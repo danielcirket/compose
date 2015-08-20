@@ -14,10 +14,10 @@ namespace Compose
 			);
 		}
 
-		private class DynamicManagerExposer<TInterface, TOriginal> : DynamicManager<TInterface, TOriginal>
+		private class DynamicManagerExposer<TInterface, TOriginal> : WeakReferencingDynamicManager<TInterface, TOriginal>
 			where TInterface : class where TOriginal : TInterface
 		{
-			public DynamicManagerExposer(IDynamicManagerContainer<TInterface, TOriginal> dynamicContainer, ITransitionManagerContainer transitionContainer, IAbstractFactory<TOriginal> factory)
+			public DynamicManagerExposer(DynamicManagerContainer<TInterface, TOriginal> dynamicContainer, TransitionManagerContainer transitionContainer, AbstractFactory<TOriginal> factory)
 				: base(dynamicContainer, transitionContainer, (TOriginal)factory.Create())
 			{ }
         }

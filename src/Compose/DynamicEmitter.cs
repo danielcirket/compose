@@ -41,7 +41,7 @@ namespace Compose
 				typeBuilder.AddGenericsFrom(serviceTypeInfo);
 			try
 			{
-				var managerTypeInfo = typeof(IDynamicRegister<>).MakeGenericType(serviceType).GetTypeInfo();
+				var managerTypeInfo = typeof(DynamicRegister<>).MakeGenericType(serviceType).GetTypeInfo();
                 typeBuilder.AddDirectImplementation(serviceTypeInfo, managerTypeInfo);
 				return typeBuilder.CreateTypeInfo().AsType();
 			}

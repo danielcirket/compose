@@ -136,7 +136,7 @@ namespace Compose.Tests
 			var service = app.ApplicationServices.GetRequiredService<IDependency>();
 			Dependency1.Id = Guid.NewGuid().ToString();
 			Assert.Equal(Dependency1.Id, service.GetId());
-			var transition = app.ApplicationServices.GetRequiredService<ITransitionManager<IDependency>>();
+			var transition = app.ApplicationServices.GetRequiredService<TransitionManager<IDependency>>();
 			transition.Change(() => new Dependency2());
 			Dependency2.Id = Guid.NewGuid().ToString();
 			Assert.Equal(Dependency2.Id, service.GetId());
